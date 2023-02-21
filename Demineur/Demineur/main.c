@@ -28,7 +28,7 @@ void displayGrid(unsigned char tableau[10][10])
         printf("|");
         for (y = 0; y < 10; y++) {
             if 
-            printf(" %d |", tableau[i][y]);
+                printf(" %d |", tableau[i][y]);
         }
         printf("\n-----------------------------------------\n");//a
     }
