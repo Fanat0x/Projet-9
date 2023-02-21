@@ -18,14 +18,9 @@ int main(int argc, char** argv)
 
     return 0;
 }
-typedef struct tile {
-    const char* status; 
-    const int danger;
-    const int proximity;
-    const int flag;
-}tile;
-
-
+struct tile {
+    const int x ; 
+};
 
 void displayGrid(unsigned char tableau[10][10])
 {

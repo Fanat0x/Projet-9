@@ -20,12 +20,8 @@ int main(int argc, char** argv)
 }
 typedef struct tile {
     const char* status; 
-    const int danger;
-    const int proximity;
-    const int flag;
+
 }tile;
-
-
 
 void displayGrid(unsigned char tableau[10][10])
 {
