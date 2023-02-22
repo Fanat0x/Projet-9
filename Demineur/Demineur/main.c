@@ -1,14 +1,27 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#define gridMaxX 10
+#define gridMaxY 10
 
-void displayGrid(unsigned char tableau[10][10]);
-void randomGrid(unsigned char tableau[10][10], int bombe);
+typedef struct tile {
+    char* status;
+    int danger;
+    int proximity;
+    int flag;
+}tile;
+
+void displayGrid(tile tableau[10][10]);
+void randomGrid(tile tableau[10][10], int bombe);
+int proximity(tile tableau[10][10], int x, int y);
+void initTile(tile tableau[10][10]);
 
 int main(int argc, char** argv)
 {
     srand(time(NULL));
-    unsigned char tableau[10][10] = { 0 };
+    tile tableau[10][10];
+    initTile(tableau);
+
 
     displayGrid(tableau);
 
@@ -18,16 +31,73 @@ int main(int argc, char** argv)
 
     return 0;
 }
-typedef struct tile {
-    const char* status; 
-    const int danger;
-    const int proximity;
-    const int flag;
-}tile;
 
 
 
-void displayGrid(unsigned char tableau[10][10])
+int proximity(tile tableau[10][10], int x, int y)
+{   
+    int proxy = 0;
+
+        if (tableau[x - 1] <= gridMaxX && tableau[y - 1] <= gridMaxY)
+        {
+            if (tableau[x][y].danger == 1)
+            proxy++;
+        }
+        else if (tableau[x - 1] <= gridMaxX && tableau[y] <= gridMaxY)
+        {
+            if (tableau[x][y].danger == 1)
+            proxy++;
+        }
+        else if (tableau[x - 1] <= gridMaxX && tableau[y + 1] <= gridMaxY)
+        {
+            if (tableau[x][y].danger == 1)
+            proxy++;
+        }
+        else if (tableau[x] <= gridMaxX && tableau[y - 1] <= gridMaxY)
+        {
+            if (tableau[x][y].danger == 1)
+            proxy++;
+        }
+        else if (tableau[x] <= gridMaxX && tableau[y + 1] <= gridMaxY)
+        {
+            if (tableau[x][y].danger == 1)
+            proxy++;
+        }
+        else if (tableau[x + 1] <= gridMaxX && tableau[y - 1] <= gridMaxY)
+        {
+            if (tableau[x][y].danger == 1)
+            proxy++;
+        }
+        else if (tableau[x + 1] <= gridMaxX && tableau[y] <= gridMaxY)
+        {
+            if (tableau[x][y].danger == 1)
+            proxy++;
+        }
+        else if (tableau[x + 1] <= gridMaxX && tableau[y + 1] <= gridMaxY)
+        {
+            if (tableau[x][y].danger == 1)
+            proxy++;
+        }
+        return proxy;
+
+}
+
+void initTile(tile tableau[10][10])
+{   
+    for (int x = 0; x < 10; x++) 
+    {
+        for (int y = 0; y < 10; y++) 
+        {
+            tableau[x][y].status = "hidden";
+            tableau[x][y].danger = 0;
+            tableau[x][y].flag = 0;
+            tableau[x][y].proximity = proximity(tableau, x, y);
+        }
+    }
+}
+
+//a refaire avec la struct
+void displayGrid( tile tableau[10][10])
 {
     int i = 0;
     int y = 0;
@@ -35,20 +105,29 @@ void displayGrid(unsigned char tableau[10][10])
     for (i = 0; i < 10; i++) {
         printf("|");
         for (y = 0; y < 10; y++) {
-            if (tableau[i][y] == "")
-                printf(" %d |", tableau[i][y]);
+            if (tableau[i][y].status == "hidden" && tableau[i][y].flag == 1)
+                printf(" P |");
+            else if (tableau[i][y].status == "hidden")
+                printf(" - |");
+            else if (tableau[i][y].status == "revealed" && tableau[i][y].danger == 1)
+                printf(" * |");
+            else if (tableau[i][y].status == "revealed")
+                printf("   |");
+
+
+
         }
-        printf("\n-----------------------------------------\n");//a
+        printf("\n-----------------------------------------\n");
     }
 }
 
-void randomGrid(unsigned char tableau[10][10], int bombe)
+void randomGrid( tile tableau[10][10], int bombe)
 {
     
     for (int i = 0; i < 10; i++) {
         int x = rand() % 10;
         int y = rand() % 10;
-        if (tableau[x][y] == 1)
+        if (tableau[x][y].danger == 1)
         {
             i--;
             continue;
@@ -56,7 +135,7 @@ void randomGrid(unsigned char tableau[10][10], int bombe)
         else
         {
             printf("bombe = %d  %d \n", x+1, y+1);
-            tableau[x][y] = 9;
+            tableau[x][y].danger = 1;
         }
     }
 }
