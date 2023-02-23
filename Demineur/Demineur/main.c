@@ -149,31 +149,32 @@ void turn(tile tableau[10][10])
 {
     
     int grandX = 0;
-    printf("Indiquez une coordonnée X (1 à 10)");
-    scanf_s("%d", grandX);
+    printf("Indiquez une coordonnee X (1 a 10) : ");
+    scanf_s("%d", &grandX);
     int grandY = 0;
-    printf("Indiquez une coordonnée Y (1 à 10)");
-    scanf_s("%d", grandY);
-    int coordonnée[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-
-    if (grandX == coordonnée && grandY == coordonnée)
+    printf("Indiquez une coordonnee Y (1 a 10) : ");
+    scanf_s("%d", &grandY);
+    int coordonnee[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    printf(grandX);
+    printf(grandY);
+    if (grandX == coordonnee && grandY == coordonnee)
     {
         if (tableau[grandX][grandY].status == "revealed")
         {
-            printf("Cette case à déjà été révelée");
+            printf("Cette case à deja ete revelee\n");
             turn(tableau);
         }
         else if (tableau[grandX][grandY].danger == 1)
         {
             displayGridEnd(tableau);
-            printf("Vous avez cliqué sur une mine, perdu !");
+            printf("Vous avez clique sur une mine, perdu !\n");
         }
         else
         {
             tableau[grandX][grandY].status = "revealed";
             if (win(tableau) == 1)
             {
-                printf("Bravo, vous avez gagné");
+                printf("Bravo, vous avez gagne\n");
             }
             else
             {
@@ -184,7 +185,7 @@ void turn(tile tableau[10][10])
     }
     else
     {
-        printf("Ces coordonées n'existent pas");
+        printf("Ces coordonees n'existent pas \n");
         turn(tableau);
     }
 }
