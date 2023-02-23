@@ -111,8 +111,10 @@ void displayGrid( tile tableau[10][10])
                 printf(" - |");
             else if (tableau[i][y].status == "revealed" && tableau[i][y].danger == 1)
                 printf(" * |");
-            else if (tableau[i][y].status == "revealed")
+            else if (tableau[i][y].status == "revealed" && tableau[i][y].proximity == 0)
                 printf("   |");
+            else if (tableau[i][y].status == "revealed" && tableau[i][y].proximity > 0)
+                printf(" %d |", tableau[i][y].proximity);
 
 
 
