@@ -29,6 +29,8 @@ int main(int argc, char** argv)
     randomGrid(tableau, bombe);
     displayGrid(tableau);
 
+    turn(tableau);
+
     return 0;
 }
 
@@ -111,8 +113,10 @@ void displayGrid( tile tableau[10][10])
                 printf(" - |");
             else if (tableau[i][y].status == "revealed" && tableau[i][y].danger == 1)
                 printf(" * |");
-            else if (tableau[i][y].status == "revealed")
+            else if (tableau[i][y].status == "revealed" && tableau[i][y].proximity == 0)
                 printf("   |");
+            else if (tableau[i][y].status == "revealed" && tableau[i][y].proximity > 0)
+                printf(" %d |", tableau[i][y].proximity);
 
 
 
@@ -137,5 +141,93 @@ void randomGrid( tile tableau[10][10], int bombe)
             printf("bombe = %d  %d \n", x+1, y+1);
             tableau[x][y].danger = 1;
         }
+    }
+}
+
+void turn(tile tableau[10][10])
+{
+    printf("Pour sélectionner une case, indiquez des coordonées comprises entre 1 & 10 (exemple : 4,6)");
+        int grandX = 0;
+            printf("Indiquez une coordonnée X (1 à 10)");
+            scanf_s("%d", grandX);
+            int grandY = 0;
+            printf("Indiquez une coordonnée Y (1 à 10)");
+            scanf_s("%d", grandY);
+            int coordonnée = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+    if (grandX == coordonnée && grandY == coordonnée)
+    {
+        if (tableau[grandX][grandY].status == "revealed")
+        {
+            printf("Cette case à déjà été révelée");
+            turn(tableau);
+        }
+        else if (tableau[grandX][grandY].danger == 1)
+        {
+            displayGridEnd(tableau);
+            printf("Vous avez cliqué sur une mine, perdu !");
+        }
+        else
+        {
+            tableau[grandX][grandY].status = "revealed";
+            if (win(tableau) == 1)
+            {
+                printf("Bravo, vous avez gagné")
+            }
+            else
+            {
+                reveal(tableau, grandX, grandY)
+                turn(tableau)
+            }
+        }
+    }
+    else
+    {
+        printf("Ces coordonées n'existent pas");
+        turn(tableau);
+    }
+}
+
+void displayGridEnd(tile tableau[10][10])
+{
+    printf("\n-----------------------------------------\n");
+    for (int i = 0; i < 10; i++) {
+        printf("|");
+        for (int y = 0; y < 10; y++) {
+            if (tableau[i][y].danger == 0 && tableau[i][y].flag == 1)
+                printf(" X |");
+            else if (tableau[i][y].danger == 1 && tableau[i][y].flag == 1)
+                printf(" P |");
+            else if (tableau[i][y].danger == 1)
+                printf(" * |");
+            else if (tableau[i][y].status == "hidden")
+                printf(" - |");
+            else if (tableau[i][y].status == "revealed")
+                printf("   |");
+        }
+        printf("\n-----------------------------------------\n");
+    }
+}
+
+int win(tile tableau[10][10])
+{
+    int count = 0;
+    for (int x = 0; x < 10; x++)
+    {
+        for (int y = 0; y < 10; y++)
+        {
+            if (tableau[x][y].status == "revealed" && tableau[x][y].danger == 0)
+            {
+                count++;
+            }
+        }
+    }
+    if (count == 90)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
     }
 }
