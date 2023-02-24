@@ -11,26 +11,27 @@ typedef struct tile {
     int flag;
 }tile;
 
-void displayGrid(tile tableau[10][10]);
-void randomGrid(tile tableau[10][10], int bombe);
-int proximity(tile tableau[10][10], int x, int y);
-void initTile(tile tableau[10][10]);
-void turn(tile tableau[10][10]);
-void displayGridEnd(tile tableau[10][10]);
-void reveal(tile tableau[10][10], int x, int y);
+void displayGrid(tile tableau[gridMaxX][gridMaxY]);
+void randomGrid(tile tableau[gridMaxX][gridMaxY], int bombe);
+int proximity(tile tableau[gridMaxX][gridMaxY]);
+void initTile(tile tableau[gridMaxX][gridMaxY]);
+void turn(tile tableau[gridMaxX][gridMaxY]);
+void displayGridEnd(tile tableau[gridMaxX][gridMaxY]);
+void reveal(tile tableau[gridMaxX][gridMaxY], int x, int y);
+void displayGridProxy(tile tableau[gridMaxX][gridMaxY]);
+int inTable(int x, int y, int MaxX, int MaxY);
+int win(tile tableau[gridMaxX][gridMaxY]);
 
 
 int main(int argc, char** argv)
 {
     srand(time(NULL));
-    tile tableau[10][10];
+    tile tableau[gridMaxX][gridMaxY];
     initTile(tableau);
-
-
-    displayGrid(tableau);
-
     int bombe = 10;
     randomGrid(tableau, bombe);
+    proximity(tableau);
+    displayGridProxy(tableau);
     displayGrid(tableau);
 
     turn(tableau);
@@ -40,55 +41,89 @@ int main(int argc, char** argv)
 
 
 
-int proximity(tile tableau[10][10], int x, int y)
-{   
-    int proxy = 0;
+int proximity(tile tableau[gridMaxX][gridMaxY])
+{
+    for (int x = 0; x < gridMaxX; x++)
+    {
+        for (int y = 0; y < gridMaxY; y++)
+        {
+            int proxy = 0;
 
-        if (tableau[x - 1] <= gridMaxX && tableau[y - 1] <= gridMaxY)
-        {
-            if (tableau[x][y].danger == 1)
-            proxy++;
+            if (inTable(x - 1, y - 1,gridMaxX, gridMaxY ) == 1)
+            {
+                if (tableau[x - 1][y - 1].danger == 1)
+                {
+                    proxy++;
+                } 
+            }
+            if (inTable(x - 1, y, gridMaxX, gridMaxY) == 1)
+            {
+                if (tableau[x - 1][y].danger == 1)
+                {
+                    proxy++;
+                }
+            }
+            if (inTable(x - 1, y + 1, gridMaxX, gridMaxY) == 1)
+            {
+                if (tableau[x - 1][y + 1].danger == 1)
+                {
+                    proxy++;
+                }
+            }
+            if (inTable(x, y - 1, gridMaxX, gridMaxY) == 1)
+            {
+                if (tableau[x][y - 1].danger == 1)
+                {
+                    proxy++;
+                }
+            }
+            if (inTable(x, y + 1, gridMaxX, gridMaxY) == 1)
+            {
+                if (tableau[x][y + 1].danger == 1)
+                {
+                    proxy++;
+                }
+            }
+            if (inTable(x + 1, y - 1, gridMaxX, gridMaxY) == 1)
+            {
+                if (tableau[x + 1][y - 1].danger == 1)
+                {
+                    proxy++;
+                }
+            }
+            if (inTable(x + 1, y, gridMaxX, gridMaxY) == 1)
+            {
+                if (tableau[x + 1][y].danger == 1)
+                {
+                    proxy++;
+                }
+            }
+            if (inTable(x + 1, y + 1, gridMaxX, gridMaxY) == 1)
+            {
+                if (tableau[x + 1 ][y + 1].danger == 1)
+                {
+                    proxy++;
+                }
+            }
+            tableau[x][y].proximity = proxy;
         }
-        else if (tableau[x - 1] <= gridMaxX && tableau[y] <= gridMaxY)
-        {
-            if (tableau[x][y].danger == 1)
-            proxy++;
-        }
-        else if (tableau[x - 1] <= gridMaxX && tableau[y + 1] <= gridMaxY)
-        {
-            if (tableau[x][y].danger == 1)
-            proxy++;
-        }
-        else if (tableau[x] <= gridMaxX && tableau[y - 1] <= gridMaxY)
-        {
-            if (tableau[x][y].danger == 1)
-            proxy++;
-        }
-        else if (tableau[x] <= gridMaxX && tableau[y + 1] <= gridMaxY)
-        {
-            if (tableau[x][y].danger == 1)
-            proxy++;
-        }
-        else if (tableau[x + 1] <= gridMaxX && tableau[y - 1] <= gridMaxY)
-        {
-            if (tableau[x][y].danger == 1)
-            proxy++;
-        }
-        else if (tableau[x + 1] <= gridMaxX && tableau[y] <= gridMaxY)
-        {
-            if (tableau[x][y].danger == 1)
-            proxy++;
-        }
-        else if (tableau[x + 1] <= gridMaxX && tableau[y + 1] <= gridMaxY)
-        {
-            if (tableau[x][y].danger == 1)
-            proxy++;
-        }
-        return proxy;
-
+            
+    }
+    
 }
 
-void initTile(tile tableau[10][10])
+
+int inTable(int x,int  y, int MaxX, int MaxY)
+{
+    if ( x >= 0 && x < MaxX && y >= 0 && y <  MaxY )
+    {
+        return 1;
+    }
+    
+    return 0;
+}
+
+void initTile(tile tableau[gridMaxX][gridMaxY])
 {   
     for (int x = 0; x < 10; x++) 
     {
@@ -97,13 +132,12 @@ void initTile(tile tableau[10][10])
             tableau[x][y].status = "hidden";
             tableau[x][y].danger = 0;
             tableau[x][y].flag = 0;
-            tableau[x][y].proximity = proximity(tableau, x, y);
         }
     }
 }
 
 //a refaire avec la struct
-void displayGrid( tile tableau[10][10])
+void displayGrid( tile tableau[gridMaxX][gridMaxY])
 {
     int i = 0;
     int y = 0;
@@ -126,7 +160,7 @@ void displayGrid( tile tableau[10][10])
     }
 }
 
-void randomGrid( tile tableau[10][10], int bombe)
+void randomGrid( tile tableau[gridMaxX][gridMaxY], int bombe)
 {
     
     for (int i = 0; i < 10; i++) {
@@ -145,7 +179,7 @@ void randomGrid( tile tableau[10][10], int bombe)
     }
 }
 
-void turn(tile tableau[10][10])
+void turn(tile tableau[gridMaxX][gridMaxY])
 {
     
     int grandX = 0;
@@ -154,31 +188,38 @@ void turn(tile tableau[10][10])
     int grandY = 0;
     printf("Indiquez une coordonnee Y (1 a 10) : ");
     scanf_s("%d", &grandY);
-    int coordonnee[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-    printf(grandX);
-    printf(grandY);
-    if (grandX == coordonnee && grandY == coordonnee)
+
+
+
+    printf("[%d,", grandX);
+    printf("%d]\n", grandY);
+
+    int x = grandX - 1;
+    int y = grandY - 1;
+
+
+    if (inTable(x, y, gridMaxX, gridMaxY) == 1 && x===1 && y===1)
     {
-        if (tableau[grandX][grandY].status == "revealed")
+        if (tableau[x][y].status == "revealed")
         {
             printf("Cette case à deja ete revelee\n");
             turn(tableau);
         }
-        else if (tableau[grandX][grandY].danger == 1)
+        else if (tableau[x][y].danger == 1)
         {
             displayGridEnd(tableau);
             printf("Vous avez clique sur une mine, perdu !\n");
         }
         else
         {
-            tableau[grandX][grandY].status = "revealed";
+            reveal(tableau, x, y);
             if (win(tableau) == 1)
             {
                 printf("Bravo, vous avez gagne\n");
             }
             else
             {
-                reveal(tableau, grandX, grandY);
+                displayGrid(tableau);
                 turn(tableau);
             }
         }
@@ -190,7 +231,7 @@ void turn(tile tableau[10][10])
     }
 }
 
-void displayGridEnd(tile tableau[10][10])
+void displayGridEnd(tile tableau[gridMaxX][gridMaxY])
 {
     printf("\n-----------------------------------------\n");
     for (int i = 0; i < 10; i++) {
@@ -211,7 +252,7 @@ void displayGridEnd(tile tableau[10][10])
     }
 }
 
-int win(tile tableau[10][10])
+int win(tile tableau[gridMaxX][gridMaxY])
 {
     int count = 0;
     for (int x = 0; x < 10; x++)
@@ -234,111 +275,46 @@ int win(tile tableau[10][10])
     }
 }
 
-void reveal(tile tableau[10][10], int x, int y)
+void reveal(tile tableau[gridMaxX][gridMaxY], int x, int y)
 {
-    if (tableau[x - 1] <= gridMaxX && tableau[y - 1] <= gridMaxY)
-    {
-        if (tableau[x - 1][y - 1].proximity == 0)
-        {
-            tableau[x - 1][y - 1].status = "revealed";
-            reveal(tableau, x - 1, y - 1);
+    if (inTable(x, y, gridMaxX, gridMaxY) == 0 )
+        return;
+
+    if (tableau[x][y].status == "revealed")
+        return;
+
+    tableau[x][y].status = "revealed";
+
+    if (tableau[x][y].proximity != 0)
+        return;
+
+    reveal(tableau, x - 1, y - 1);
+    reveal(tableau, x - 1, y);
+    reveal(tableau, x - 1, y + 1);
+
+    reveal(tableau, x, y - 1);
+    reveal(tableau, x, y + 1);
+
+    reveal(tableau, x + 1, y - 1);
+    reveal(tableau, x + 1, y);
+    reveal(tableau, x + 1, y + 1);
+
+
+}
+
+void displayGridProxy(tile tableau[gridMaxX][gridMaxY])
+{
+    int i = 0;
+    int y = 0;
+    printf("\n-----------------------------------------\n");
+    for (i = 0; i < 10; i++) {
+        printf("|");
+        for (y = 0; y < 10; y++) {
+            if (tableau[i][y].danger == 1)
+                printf(" * |");
+            else
+                printf(" %d |", tableau[i][y].proximity);
         }
-        else
-        {
-            tableau[x - 1][y - 1].status = "revealed";
-        }
+        printf("\n-----------------------------------------\n");
     }
-
-    if (tableau[x - 1] <= gridMaxX && tableau[y] <= gridMaxY)
-    {
-        if (tableau[x - 1][y].proximity == 0)
-        {
-            tableau[x - 1][y].status = "revealed";
-            reveal(tableau, x - 1, y);
-        }
-        else
-        {
-            tableau[x - 1][y].status = "revealed";
-        }
-    }
-
-    if (tableau[x - 1] <= gridMaxX && tableau[y + 1] <= gridMaxY)
-    {
-        if (tableau[x - 1][y + 1].proximity == 0)
-        {
-            tableau[x - 1][y + 1].status = "revealed";
-            reveal(tableau, x - 1, y + 1);
-        }
-        else
-        {
-            tableau[x - 1][y + 1].status = "revealed";
-        }
-    }
-
-    if (tableau[x] <= gridMaxX && tableau[y - 1] <= gridMaxY)
-    {
-        if (tableau[x][y - 1].proximity == 0)
-        {
-            tableau[x][y - 1].status = "revealed";
-            reveal(tableau, x, y - 1);
-        }
-        else
-        {
-            tableau[x][y - 1].status = "revealed";
-        }
-    }
-
-    if (tableau[x] <= gridMaxX && tableau[y + 1] <= gridMaxY)
-    {
-        if (tableau[x][y + 1].proximity == 0)
-        {
-            tableau[x][y + 1].status = "revealed";
-            reveal(tableau, x, y + 1);
-        }
-        else
-        {
-            tableau[x][y + 1].status = "revealed";
-        }
-    }
-
-    if (tableau[x + 1] <= gridMaxX && tableau[y - 1] <= gridMaxY)
-    {
-        if (tableau[x + 1][y - 1].proximity == 0)
-        {
-            tableau[x + 1][y - 1].status = "revealed";
-            reveal(tableau, x + 1, y - 1);
-        }
-        else
-        {
-            tableau[x + 1][y - 1].status = "revealed";
-        }
-    }
-
-    if (tableau[x + 1] <= gridMaxX && tableau[y] <= gridMaxY)
-    {
-        if (tableau[x + 1][y].proximity == 0)
-        {
-            tableau[x + 1][y].status = "revealed";
-            reveal(tableau, x + 1, y);
-        }
-        else
-        {
-            tableau[x + 1][y].status = "revealed";
-        }
-    }
-
-    if (tableau[x + 1] <= gridMaxX && tableau[y + 1] <= gridMaxY)
-    {
-        if (tableau[x + 1][y + 1].proximity == 0)
-        {
-            tableau[x + 1][y + 1].status = "revealed";
-            reveal(tableau, x + 1, y + 1);
-        }
-        else
-        {
-            tableau[x + 1][y + 1].status = "revealed";
-        }
-    }
-
-
 }
