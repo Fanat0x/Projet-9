@@ -21,6 +21,7 @@ void reveal(tile tableau[gridMaxX][gridMaxY], int x, int y);
 void displayGridProxy(tile tableau[gridMaxX][gridMaxY]);
 int inTable(int x, int y, int MaxX, int MaxY);
 int win(tile tableau[gridMaxX][gridMaxY]);
+void action(tile tableau[gridMaxX][gridMaxY], int x, int y, int action_type);
 
 
 int main(int argc, char** argv)
@@ -181,15 +182,34 @@ void randomGrid( tile tableau[gridMaxX][gridMaxY], int bombe)
 
 void turn(tile tableau[gridMaxX][gridMaxY])
 {
-    
+    int action_type;
+    printf("entrez 1 si vous souhaitez reveal une case ou entrez 2 si vous souhaitez mettre un drapeau: ");
+    if (scanf_s("%d", &action_type) == 0 || action_type != 1 && action_type != 2)
+    {
+        printf("gg mLemodis\n");
+        turn(tableau);
+    }
+    while (getchar() != '\n');
+
     int grandX = 0;
     printf("Indiquez une coordonnee X (1 a 10) : ");
-    scanf_s("%d", &grandX);
+    
+    if (scanf_s("%d", &grandX) == 0)
+    {
+        printf("gg mLemodis\n");
+        turn(tableau);
+    }
+    while (getchar() != '\n');
+
     int grandY = 0;
     printf("Indiquez une coordonnee Y (1 a 10) : ");
-    scanf_s("%d", &grandY);
 
-
+    if (scanf_s("%d", &grandY) == 0)
+    {
+        printf("gg mLemodis\n");
+        turn(tableau);
+    }
+    while (getchar() != '\n');
 
     printf("[%d,", grandX);
     printf("%d]\n", grandY);
@@ -197,8 +217,12 @@ void turn(tile tableau[gridMaxX][gridMaxY])
     int x = grandX - 1;
     int y = grandY - 1;
 
+    action(tableau, x, y, action_type);
+}
 
-    if (inTable(x, y, gridMaxX, gridMaxY) == 1 && x===1 && y===1)
+void action(tile tableau[gridMaxX][gridMaxY], int x, int y, int action_type)
+{
+    if (inTable(x, y, gridMaxX, gridMaxY) == 1 && action_type == 1)
     {
         if (tableau[x][y].status == "revealed")
         {
@@ -222,6 +246,20 @@ void turn(tile tableau[gridMaxX][gridMaxY])
                 displayGrid(tableau);
                 turn(tableau);
             }
+        }
+    }
+    else if (inTable(x, y, gridMaxX, gridMaxY) == 1 && action_type == 2)
+    {
+        if (tableau[x][y].status == "revealed")
+        {
+            printf("Cette case à deja ete revelee\n");
+            turn(tableau);
+        }
+        else
+        {
+            tableau[x][y].flag = 1;
+            displayGrid(tableau);
+            turn(tableau);
         }
     }
     else
