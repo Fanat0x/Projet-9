@@ -9,10 +9,11 @@ typedef struct tile {
     int danger;
     int proximity;
     int flag;
+    int start;
 }tile;
 
 void displayGrid(tile tableau[gridMaxX][gridMaxY]);
-void randomGrid(tile tableau[gridMaxX][gridMaxY], int bombe);
+void randomGrid(tile tableau[gridMaxX][gridMaxY], int bombe, int x, int y);
 int proximity(tile tableau[gridMaxX][gridMaxY]);
 void initTile(tile tableau[gridMaxX][gridMaxY]);
 void turn(tile tableau[gridMaxX][gridMaxY]);
@@ -22,6 +23,8 @@ void displayGridProxy(tile tableau[gridMaxX][gridMaxY]);
 int inTable(int x, int y, int MaxX, int MaxY);
 int win(tile tableau[gridMaxX][gridMaxY]);
 void action(tile tableau[gridMaxX][gridMaxY], int x, int y, int action_type);
+void firstTurn(tile tableau[gridMaxX][gridMaxY]);
+int safeZone(int x, int y);
 
 
 int main(int argc, char** argv)
@@ -29,8 +32,8 @@ int main(int argc, char** argv)
     srand(time(NULL));
     tile tableau[gridMaxX][gridMaxY];
     initTile(tableau);
+    firstTurn(tableau);
     int bombe = 10;
-    randomGrid(tableau, bombe);
     proximity(tableau);
     displayGridProxy(tableau);
     displayGrid(tableau);
@@ -40,7 +43,33 @@ int main(int argc, char** argv)
     return 0;
 }
 
+void firstTurn(tile tableau[gridMaxX][gridMaxY])
+{
+    displayGrid(tableau);
+    int grandX = 0;
+    printf("Indiquez une coordonnee X (1 a 10) : ");
 
+    if (scanf_s("%d", &grandX) == 0)
+    {
+        printf("gg mLemodis\n");
+        firstTurn(tableau);
+    }
+    while (getchar() != '\n');
+
+    int grandY = 0;
+    printf("Indiquez une coordonnee Y (1 a 10) : ");
+
+    if (scanf_s("%d", &grandY) == 0)
+    {
+        printf("gg mLemodis\n");
+        firstTurn(tableau);
+    }
+    while (getchar() != '\n');
+    randomGrid(tableau, int bombe, int grandX, int grandY);
+
+    reveal(tableau, grandX, grandY);
+
+}
 
 int proximity(tile tableau[gridMaxX][gridMaxY])
 {
@@ -161,23 +190,76 @@ void displayGrid( tile tableau[gridMaxX][gridMaxY])
     }
 }
 
-void randomGrid( tile tableau[gridMaxX][gridMaxY], int bombe)
+void randomGrid( tile tableau[gridMaxX][gridMaxY], int bombe, int x,int y)
 {
-    
-    for (int i = 0; i < 10; i++) {
-        int x = rand() % 10;
-        int y = rand() % 10;
-        if (tableau[x][y].danger == 1)
+    int caseCount = safeZone(x, y);
+    int matrix = gridMaxX * gridMaxY - caseCount;
+    while (int bombe > 0)
+    {
+        int matrix = matrix - bombe;
+        bombe--;
+        int placeBombe = rand() % matrix;
+        for (int i = 0; i < 10; i++)
         {
-            i--;
-            continue;
+            for (int y = 0; y < 10; y++)
+            {
+                if (tableau.danger[i][y] == 0 && tableau.start[i][y] == 0)
+                {
+                    placeBombe--;
+                }
+                else
+                {
+                    continue;
+                }
+            }
         }
-        else
-        {
-            printf("bombe = %d  %d \n", x+1, y+1);
-            tableau[x][y].danger = 1;
-        }
+    }  
+}
+
+int safeZone(int x, int y)
+{
+    int caseCount;
+    if (inTable(x - 1, y - 1, gridMaxX, gridMaxY) == 1)
+    {
+        tableau.start[x - 1][y - 1] = 1;
+        caseCount++;
     }
+    if (inTable(x - 1, y, gridMaxX, gridMaxY) == 1)
+    {
+        tableau.start[x - 1][y] = 1;
+        caseCount++;
+    }
+    if (inTable(x - 1, y + 1, gridMaxX, gridMaxY) == 1)
+    {
+        tableau.start[x - 1][y + 1] = 1;
+        caseCount++;
+    }
+    if (inTable(x, y - 1, gridMaxX, gridMaxY) == 1)
+    {
+        tableau.start[x][y - 1] = 1;
+        caseCount++;
+    }
+    if (inTable(x, y + 1, gridMaxX, gridMaxY) == 1)
+    {
+        tableau.start[x][y + 1] = 1;
+        caseCount++;
+    }
+    if (inTable(x + 1, y - 1, gridMaxX, gridMaxY) == 1)
+    {
+        tableau.start[x + 1][y - 1] = 1;
+        caseCount++;
+    }
+    if (inTable(x + 1, y, gridMaxX, gridMaxY) == 1)
+    {
+        tableau.start[x + 1][y] = 1;
+        caseCount++;
+    }
+    if (inTable(x + 1, y + 1, gridMaxX, gridMaxY) == 1)
+    {
+        tableau.start[x + 1][y + 1] = 1;
+        caseCount++;
+    }
+    return caseCount;
 }
 
 void turn(tile tableau[gridMaxX][gridMaxY])
