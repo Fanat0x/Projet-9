@@ -51,7 +51,7 @@ void firstTurn(tile tableau[gridMaxX][gridMaxY], int bombe)
 
     if (scanf_s("%d", &grandX) == 0)
     {
-        printf("gg mLemodis\n");
+        printf("Coordonnees incorrectes\n");
         firstTurn(tableau, bombe);
     }
     while (getchar() != '\n');
@@ -62,7 +62,7 @@ void firstTurn(tile tableau[gridMaxX][gridMaxY], int bombe)
 
     if (scanf_s("%d", &grandY) == 0)
     {
-        printf("gg mLemodis\n");
+        printf("Coordonnees incorrectes\n");
         firstTurn(tableau, bombe);
     }
     while (getchar() != '\n');
@@ -316,10 +316,10 @@ int safeZone(tile tableau[gridMaxX][gridMaxY],int x, int y)
 void turn(tile tableau[gridMaxX][gridMaxY])
 {
     int action_type;
-    printf("entrez 1 si vous souhaitez reveal une case ou entrez 2 si vous souhaitez mettre un drapeau: ");
+    printf("Entrez 1 si vous souhaitez reveler une case ou entrez 2 si vous souhaitez placer un drapeau: ");
     if (scanf_s("%d", &action_type) == 0 || action_type != 1 && action_type != 2)
     {
-        printf("gg mLemodis\n");
+        printf("Action incorrecte\n");
         turn(tableau);
     }
     while (getchar() != '\n');
@@ -329,7 +329,7 @@ void turn(tile tableau[gridMaxX][gridMaxY])
     
     if (scanf_s("%d", &grandX) == 0)
     {
-        printf("gg mLemodis\n");
+        printf("Coordonnees incorrectes\n");
         turn(tableau);
     }
     while (getchar() != '\n');
@@ -339,7 +339,7 @@ void turn(tile tableau[gridMaxX][gridMaxY])
 
     if (scanf_s("%d", &grandY) == 0)
     {
-        printf("gg mLemodis\n");
+        printf("Coordonnees incorrectes\n");
         turn(tableau);
     }
     while (getchar() != '\n');
