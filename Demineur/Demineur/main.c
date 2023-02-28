@@ -13,8 +13,8 @@ typedef struct tile {
 }tile;
 
 void displayGrid(tile tableau[gridMaxX][gridMaxY]);
-void randomGrid(tile tableau[gridMaxX][gridMaxY], int bombe, int x, int y);
-int proximity(tile tableau[gridMaxX][gridMaxY]);
+void randomGrid(tile tableau[gridMaxX][gridMaxY], int x, int y);
+void proximity(tile tableau[gridMaxX][gridMaxY]);
 void initTile(tile tableau[gridMaxX][gridMaxY]);
 void turn(tile tableau[gridMaxX][gridMaxY]);
 void displayGridEnd(tile tableau[gridMaxX][gridMaxY]);
@@ -23,18 +23,17 @@ void displayGridProxy(tile tableau[gridMaxX][gridMaxY]);
 int inTable(int x, int y, int MaxX, int MaxY);
 int win(tile tableau[gridMaxX][gridMaxY]);
 void action(tile tableau[gridMaxX][gridMaxY], int x, int y, int action_type);
-void firstTurn(tile tableau[gridMaxX][gridMaxY]);
-int safeZone(int x, int y);
+void firstTurn(tile tableau[gridMaxX][gridMaxY], int bombe);
+int safeZone(tile tableau[gridMaxX][gridMaxY], int x, int y);
+void displayGridLose(tile tableau[gridMaxX][gridMaxY]);
 
 
 int main(int argc, char** argv)
 {
     srand(time(NULL));
     tile tableau[gridMaxX][gridMaxY];
-    initTile(tableau);
-    firstTurn(tableau);
     int bombe = 10;
-    proximity(tableau);
+    firstTurn(tableau, bombe);
     displayGridProxy(tableau);
     displayGrid(tableau);
 
@@ -43,8 +42,9 @@ int main(int argc, char** argv)
     return 0;
 }
 
-void firstTurn(tile tableau[gridMaxX][gridMaxY])
+void firstTurn(tile tableau[gridMaxX][gridMaxY], int bombe)
 {
+    initTile(tableau);
     displayGrid(tableau);
     int grandX = 0;
     printf("Indiquez une coordonnee X (1 a 10) : ");
@@ -52,9 +52,10 @@ void firstTurn(tile tableau[gridMaxX][gridMaxY])
     if (scanf_s("%d", &grandX) == 0)
     {
         printf("gg mLemodis\n");
-        firstTurn(tableau);
+        firstTurn(tableau, bombe);
     }
     while (getchar() != '\n');
+    grandX--;
 
     int grandY = 0;
     printf("Indiquez une coordonnee Y (1 a 10) : ");
@@ -62,16 +63,19 @@ void firstTurn(tile tableau[gridMaxX][gridMaxY])
     if (scanf_s("%d", &grandY) == 0)
     {
         printf("gg mLemodis\n");
-        firstTurn(tableau);
+        firstTurn(tableau, bombe);
     }
     while (getchar() != '\n');
-    randomGrid(tableau, int bombe, int grandX, int grandY);
+    grandY--;
 
+    randomGrid(tableau, grandX, grandY);
+    proximity(tableau);
     reveal(tableau, grandX, grandY);
+
 
 }
 
-int proximity(tile tableau[gridMaxX][gridMaxY])
+void proximity(tile tableau[gridMaxX][gridMaxY])
 {
     for (int x = 0; x < gridMaxX; x++)
     {
@@ -149,8 +153,11 @@ int inTable(int x,int  y, int MaxX, int MaxY)
     {
         return 1;
     }
+    else 
+    {
+        return 0;
+    }
     
-    return 0;
 }
 
 void initTile(tile tableau[gridMaxX][gridMaxY])
@@ -162,6 +169,7 @@ void initTile(tile tableau[gridMaxX][gridMaxY])
             tableau[x][y].status = "hidden";
             tableau[x][y].danger = 0;
             tableau[x][y].flag = 0;
+            tableau[x][y].start = 0;
         }
     }
 }
@@ -190,73 +198,116 @@ void displayGrid( tile tableau[gridMaxX][gridMaxY])
     }
 }
 
-void randomGrid( tile tableau[gridMaxX][gridMaxY], int bombe, int x,int y)
+void displayGridLose(tile tableau[gridMaxX][gridMaxY])
 {
-    int caseCount = safeZone(x, y);
-    int matrix = gridMaxX * gridMaxY - caseCount;
-    while (int bombe > 0)
+    int i = 0;
+    int y = 0;
+    printf("\n-----------------------------------------\n");
+    for (i = 0; i < 10; i++) {
+        printf("|");
+        for (y = 0; y < 10; y++) {
+            if (tableau[i][y].status == "hidden" && tableau[i][y].flag == 1)
+                printf(" P |");
+            else if (tableau[i][y].danger == 1)
+                printf(" * |");
+            else if (tableau[i][y].status == "hidden")
+                printf(" - |");
+            else if (tableau[i][y].status == "revealed" && tableau[i][y].proximity == 0)
+                printf("   |");
+            else if (tableau[i][y].status == "revealed" && tableau[i][y].proximity > 0)
+                printf(" %d |", tableau[i][y].proximity);
+        }
+        printf("\n-----------------------------------------\n");
+    }
+}
+
+void randomGrid( tile tableau[gridMaxX][gridMaxY], int x,int y)
+{   
+    int bombeOn = 0;
+    int safeCases = safeZone(tableau, x, y);
+    int matrix = gridMaxX * gridMaxY - safeCases;
+    while (bombeOn < 10)
     {
-        int matrix = matrix - bombe;
-        bombe--;
+        matrix = matrix - bombeOn;
+        bombeOn++;
         int placeBombe = rand() % matrix;
         for (int i = 0; i < 10; i++)
         {
-            for (int y = 0; y < 10; y++)
+            if (placeBombe < 0)
             {
-                if (tableau.danger[i][y] == 0 && tableau.start[i][y] == 0)
-                {
-                    placeBombe--;
-                }
-                else
-                {
-                    continue;
-                }
+                break;
             }
+            else
+            {
+                for (int y = 0; y < 10; y++)
+                {
+                    if (tableau[i][y].danger == 0 && tableau[i][y].start == 0)
+                    {
+
+                        if (placeBombe == 0)
+                        {
+                            tableau[i][y].danger = 1;
+                            placeBombe--;
+                            break;
+                        }
+                        else
+                        {
+                            placeBombe--;
+                        }
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+            } 
         }
     }  
 }
 
-int safeZone(int x, int y)
-{
-    int caseCount;
+int safeZone(tile tableau[gridMaxX][gridMaxY],int x, int y)
+{   
+    tableau[x][y].start = 1;
+    int caseCount = 1;
     if (inTable(x - 1, y - 1, gridMaxX, gridMaxY) == 1)
     {
-        tableau.start[x - 1][y - 1] = 1;
+        tableau[x - 1][y - 1].start = 1;
         caseCount++;
     }
     if (inTable(x - 1, y, gridMaxX, gridMaxY) == 1)
     {
-        tableau.start[x - 1][y] = 1;
+        tableau[x - 1][y].start = 1;
         caseCount++;
     }
     if (inTable(x - 1, y + 1, gridMaxX, gridMaxY) == 1)
     {
-        tableau.start[x - 1][y + 1] = 1;
+        tableau[x - 1][y + 1].start = 1;
         caseCount++;
     }
     if (inTable(x, y - 1, gridMaxX, gridMaxY) == 1)
     {
-        tableau.start[x][y - 1] = 1;
+        tableau[x][y - 1].start = 1;
         caseCount++;
     }
     if (inTable(x, y + 1, gridMaxX, gridMaxY) == 1)
     {
-        tableau.start[x][y + 1] = 1;
+        tableau[x][y + 1].start = 1;
         caseCount++;
+        printf("%d", tableau[x][y + 1].start);
     }
     if (inTable(x + 1, y - 1, gridMaxX, gridMaxY) == 1)
     {
-        tableau.start[x + 1][y - 1] = 1;
+        tableau[x + 1][y - 1].start = 1;
         caseCount++;
     }
     if (inTable(x + 1, y, gridMaxX, gridMaxY) == 1)
     {
-        tableau.start[x + 1][y] = 1;
+        tableau[x + 1][y].start = 1;
         caseCount++;
     }
     if (inTable(x + 1, y + 1, gridMaxX, gridMaxY) == 1)
     {
-        tableau.start[x + 1][y + 1] = 1;
+        tableau[x + 1][y + 1].start = 1;
         caseCount++;
     }
     return caseCount;
@@ -313,7 +364,7 @@ void action(tile tableau[gridMaxX][gridMaxY], int x, int y, int action_type)
         }
         else if (tableau[x][y].danger == 1)
         {
-            displayGridEnd(tableau);
+            displayGridLose(tableau);
             printf("Vous avez clique sur une mine, perdu !\n");
         }
         else
@@ -321,6 +372,7 @@ void action(tile tableau[gridMaxX][gridMaxY], int x, int y, int action_type)
             reveal(tableau, x, y);
             if (win(tableau) == 1)
             {
+                displayGridEnd(tableau);
                 printf("Bravo, vous avez gagne\n");
             }
             else
@@ -430,10 +482,21 @@ void displayGridProxy(tile tableau[gridMaxX][gridMaxY])
     for (i = 0; i < 10; i++) {
         printf("|");
         for (y = 0; y < 10; y++) {
+            
+            
             if (tableau[i][y].danger == 1)
+            {
                 printf(" * |");
+            }
+
+            else if (tableau[i][y].status == "revealed" && tableau[i][y].proximity == 0)
+            {
+                printf("   |");
+            }
             else
+            {
                 printf(" %d |", tableau[i][y].proximity);
+            }
         }
         printf("\n-----------------------------------------\n");
     }
