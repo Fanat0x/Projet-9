@@ -1,8 +1,15 @@
+//Import des différentes librairies C nécessaires
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+
+//Définition de la taille maximale du tableau
+
 #define gridMaxX 10
 #define gridMaxY 10
+
+//Définition des paramètres des cases en structure
 
 typedef struct tile {
     char* status;
@@ -12,6 +19,8 @@ typedef struct tile {
     int start;
 }tile;
 
+//Initialisation de différentes fontions
+
 void displayGrid(tile tableau[gridMaxX][gridMaxY]);
 void randomGrid(tile tableau[gridMaxX][gridMaxY], int x, int y);
 void proximity(tile tableau[gridMaxX][gridMaxY]);
@@ -19,7 +28,7 @@ void initTile(tile tableau[gridMaxX][gridMaxY]);
 void turn(tile tableau[gridMaxX][gridMaxY]);
 void displayGridEnd(tile tableau[gridMaxX][gridMaxY]);
 void reveal(tile tableau[gridMaxX][gridMaxY], int x, int y);
-void displayGridProxy(tile tableau[gridMaxX][gridMaxY]);
+//void displayGridProxy(tile tableau[gridMaxX][gridMaxY]);
 int inTable(int x, int y, int MaxX, int MaxY);
 int win(tile tableau[gridMaxX][gridMaxY]);
 void action(tile tableau[gridMaxX][gridMaxY], int x, int y, int action_type);
@@ -27,6 +36,7 @@ void firstTurn(tile tableau[gridMaxX][gridMaxY], int bombe);
 int safeZone(tile tableau[gridMaxX][gridMaxY], int x, int y);
 void displayGridLose(tile tableau[gridMaxX][gridMaxY]);
 
+//Fonction main éxécutant le jeu
 
 int main(int argc, char** argv)
 {
@@ -34,13 +44,14 @@ int main(int argc, char** argv)
     tile tableau[gridMaxX][gridMaxY];
     int bombe = 10;
     firstTurn(tableau, bombe);
-    displayGridProxy(tableau);
+    //displayGridProxy(tableau);
     displayGrid(tableau);
-
     turn(tableau);
 
     return 0;
 }
+
+//Fonction firstTurn permettant de placer les bombes après le premier coup joué
 
 void firstTurn(tile tableau[gridMaxX][gridMaxY], int bombe)
 {
@@ -71,9 +82,9 @@ void firstTurn(tile tableau[gridMaxX][gridMaxY], int bombe)
     randomGrid(tableau, grandX, grandY);
     proximity(tableau);
     reveal(tableau, grandX, grandY);
-
-
 }
+
+//Fonction proximity affichant le nombre de bombes autour de chaque case
 
 void proximity(tile tableau[gridMaxX][gridMaxY])
 {
@@ -146,6 +157,7 @@ void proximity(tile tableau[gridMaxX][gridMaxY])
     
 }
 
+//Fonction inTable vérifiant si chaque coup joué est présent dans le tableau
 
 int inTable(int x,int  y, int MaxX, int MaxY)
 {
@@ -159,6 +171,8 @@ int inTable(int x,int  y, int MaxX, int MaxY)
     }
     
 }
+
+//Fonction initTile cachant le statut de toutes les cases
 
 void initTile(tile tableau[gridMaxX][gridMaxY])
 {   
@@ -174,7 +188,8 @@ void initTile(tile tableau[gridMaxX][gridMaxY])
     }
 }
 
-//a refaire avec la struct
+//Fonction displayGrid affichant le tableau avec les différentes propriétés de chaque case
+
 void displayGrid( tile tableau[gridMaxX][gridMaxY])
 {
     int i = 0;
@@ -198,6 +213,8 @@ void displayGrid( tile tableau[gridMaxX][gridMaxY])
     }
 }
 
+//Fonction displayGridLose affichant le tableau après la défaite du joueur
+
 void displayGridLose(tile tableau[gridMaxX][gridMaxY])
 {
     int i = 0;
@@ -220,6 +237,8 @@ void displayGridLose(tile tableau[gridMaxX][gridMaxY])
         printf("\n-----------------------------------------\n");
     }
 }
+
+//Fonction randomGrid plaçant 10 bombes aléatoirement dans le tableau
 
 void randomGrid( tile tableau[gridMaxX][gridMaxY], int x,int y)
 {   
@@ -264,6 +283,8 @@ void randomGrid( tile tableau[gridMaxX][gridMaxY], int x,int y)
         }
     }  
 }
+
+//Fonction safeZone permettant de ne pas avoir de bombes autour de la case jouée au premier tour
 
 int safeZone(tile tableau[gridMaxX][gridMaxY],int x, int y)
 {   
@@ -313,6 +334,8 @@ int safeZone(tile tableau[gridMaxX][gridMaxY],int x, int y)
     return caseCount;
 }
 
+//Fonction turn permettant de jouer chaque tour de jeu
+
 void turn(tile tableau[gridMaxX][gridMaxY])
 {
     int action_type;
@@ -344,14 +367,13 @@ void turn(tile tableau[gridMaxX][gridMaxY])
     }
     while (getchar() != '\n');
 
-    printf("[%d,", grandX);
-    printf("%d]\n", grandY);
-
     int x = grandX - 1;
     int y = grandY - 1;
 
     action(tableau, x, y, action_type);
 }
+
+//Fonction action annonçant si la case peut être joué
 
 void action(tile tableau[gridMaxX][gridMaxY], int x, int y, int action_type)
 {
@@ -403,6 +425,8 @@ void action(tile tableau[gridMaxX][gridMaxY], int x, int y, int action_type)
     }
 }
 
+//Fonction displayGridEnd affichant le tableau après la fin de la partie
+
 void displayGridEnd(tile tableau[gridMaxX][gridMaxY])
 {
     printf("\n-----------------------------------------\n");
@@ -423,6 +447,8 @@ void displayGridEnd(tile tableau[gridMaxX][gridMaxY])
         printf("\n-----------------------------------------\n");
     }
 }
+
+//Fonction win calculant si le joueur a gagné la partie
 
 int win(tile tableau[gridMaxX][gridMaxY])
 {
@@ -446,6 +472,8 @@ int win(tile tableau[gridMaxX][gridMaxY])
         return 0;
     }
 }
+
+//Fonction reveal créant les cases vides entre les bombes et les proximity
 
 void reveal(tile tableau[gridMaxX][gridMaxY], int x, int y)
 {
@@ -474,30 +502,30 @@ void reveal(tile tableau[gridMaxX][gridMaxY], int x, int y)
 
 }
 
-void displayGridProxy(tile tableau[gridMaxX][gridMaxY])
-{
-    int i = 0;
-    int y = 0;
-    printf("\n-----------------------------------------\n");
-    for (i = 0; i < 10; i++) {
-        printf("|");
-        for (y = 0; y < 10; y++) {
-            
-            
-            if (tableau[i][y].danger == 1)
-            {
-                printf(" * |");
-            }
-
-            else if (tableau[i][y].status == "revealed" && tableau[i][y].proximity == 0)
-            {
-                printf("   |");
-            }
-            else
-            {
-                printf(" %d |", tableau[i][y].proximity);
-            }
-        }
-        printf("\n-----------------------------------------\n");
-    }
-}
+//void displayGridProxy(tile tableau[gridMaxX][gridMaxY])
+//{
+//    int i = 0;
+//    int y = 0;
+//    printf("\n-----------------------------------------\n");
+//    for (i = 0; i < 10; i++) {
+//        printf("|");
+//        for (y = 0; y < 10; y++) {
+//            
+//            
+//            if (tableau[i][y].danger == 1)
+//            {
+//                printf(" * |");
+//            }
+//
+//            else if (tableau[i][y].status == "revealed" && tableau[i][y].proximity == 0)
+//            {
+//                printf("   |");
+//            }
+//            else
+//            {
+//                printf(" %d |", tableau[i][y].proximity);
+//            }
+//        }
+//        printf("\n-----------------------------------------\n");
+//    }
+//}
