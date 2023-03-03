@@ -8,6 +8,7 @@
 
 #define gridMaxX 10
 #define gridMaxY 10
+#define bombe 10
 
 //Définition des paramètres des cases en structure
 
@@ -32,7 +33,7 @@ void reveal(tile tableau[gridMaxX][gridMaxY], int x, int y);
 int inTable(int x, int y, int MaxX, int MaxY);
 int win(tile tableau[gridMaxX][gridMaxY]);
 void action(tile tableau[gridMaxX][gridMaxY], int x, int y, int action_type);
-void firstTurn(tile tableau[gridMaxX][gridMaxY], int bombe);
+void firstTurn(tile tableau[gridMaxX][gridMaxY]);
 int safeZone(tile tableau[gridMaxX][gridMaxY], int x, int y);
 void displayGridLose(tile tableau[gridMaxX][gridMaxY]);
 
@@ -42,7 +43,6 @@ int main(int argc, char** argv)
 {
     srand(time(NULL));
     tile tableau[gridMaxX][gridMaxY];
-    int bombe = 10;
     firstTurn(tableau, bombe);
     //displayGridProxy(tableau);
     displayGrid(tableau);
@@ -53,7 +53,7 @@ int main(int argc, char** argv)
 
 //Fonction firstTurn permettant de placer les bombes après le premier coup joué
 
-void firstTurn(tile tableau[gridMaxX][gridMaxY], int bombe)
+void firstTurn(tile tableau[gridMaxX][gridMaxY])
 {
     initTile(tableau);
     displayGrid(tableau);
@@ -463,7 +463,7 @@ int win(tile tableau[gridMaxX][gridMaxY])
             }
         }
     }
-    if (count == 90)
+    if (count == gridMaxX * gridMaxY - bombe)
     {
         return 1;
     }
